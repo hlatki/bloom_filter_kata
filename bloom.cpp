@@ -97,7 +97,7 @@ int main() {
     //(1 - e^(-kn/m))^k
     //where k is the number of hashing functions, n is number of keys inserted
     //and m is size of bitset
-    float falsePositive = pow((1.0 - exp( -2.0 * wordCount / BUCKETS)),2.0) * 100.0;
+    float falsePositive = pow((1.0 - exp( -1.0 * HASH_FUNCTIONS * wordCount / BUCKETS)),HASH_FUNCTIONS) * 100.0;
     //Output stats
     cout << "Hash distribution: \n";
     cout << "For Murmur: \n"; 
@@ -110,7 +110,7 @@ int main() {
     printf("There were %d collisions.\n",collCount);
     printf("%d words in dictionary.\n",wordCount);
     cout << wordHashes.size() << " items in set of hashes.\n";
-    printf("Probability of false positive: %f", falsePositive);
+    printf("Probability of false positive: %f%%", falsePositive);
     cout << "\n\n";
     #endif
 
