@@ -9,7 +9,8 @@
 #include <cmath>
 
 // there are 235887 in the dictionary on the mac
-#define BUCKETS (235887 * 12)
+#define BUCKETS (235887 * 6)
+#define HASH_FUNCTIONS 3
 #define RUN_METRICS 1 
 
 using namespace std;
@@ -59,6 +60,9 @@ int main() {
     set<long> wordHashes;
     int collCount = 0;
     int wordCount = 0;
+    map<int, int> murmurMap;
+    map<int, int> djb2Map;
+    map<int, int> sdbmMap;
     #endif
     
    
@@ -67,25 +71,28 @@ int main() {
     dictionary.open(dictionaryPath);
     string line;
 
-    map<int, int> murmurMap;
-    map<int, int> djb2Map;
     while(!dictionary.eof()) {
         getline(dictionary, line);
         int a;
-        long b;
+        long b,c;
         a = MurmurHash2(line.c_str(), line.length(), 0) % BUCKETS;
         b = djb2(line.c_str(), line.length()) % BUCKETS;
+        c = sdbm(line.c_str(), line.length()) % BUCKETS;
         lookup[a] = 1;
         lookup[b] = 1;
+        lookup[c] = 1;
+
 
         //for metrics
         #if RUN_METRICS
         wordCount++;
         wordHashes.insert(a);
         wordHashes.insert(b);
+        wordHashes.insert(c);
         murmurMap[a] += 1;
         djb2Map[b] += 1;
-        if (a == b) {
+        sdbmMap[c] += 1;
+        if (a == b == c) {
             collCount++;
             cout << line << "\n";
         }
@@ -104,7 +111,10 @@ int main() {
     printHashStats(murmurMap);
     cout << "\n";
     cout << "For djb2: \n"; 
-    printHashStats(djb2Map);
+    printHashStats(djb2Map);    
+    cout << "\nFor sdbm: \n"; 
+    printHashStats(sdbmMap);
+    cout << "\n";
     cout << "\n\n";
     cout << "Bucket Size: " << BUCKETS << "\n";
     printf("There were %d collisions.\n",collCount);
