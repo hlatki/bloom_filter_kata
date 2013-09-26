@@ -88,3 +88,19 @@ unsigned long djb2(const char *str, int len)
 
     return hash;
 }
+
+
+// sdbm from http://www.cse.yorku.ca/~oz/hash.html
+
+unsigned long sdbm(const char *str, int len)
+{
+    unsigned long hash = 0;
+    int c;
+
+    for (int i =0; i < len; i++) {
+        c = str[i];
+        hash = c + (hash << 6) + (hash << 16) - hash;
+    }
+
+    return hash;
+}
